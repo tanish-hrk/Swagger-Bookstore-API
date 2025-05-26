@@ -1,12 +1,11 @@
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
-// In-memory storage (replace with database in production)
 let users = [
   {
     id: '1',
     username: 'admin',
-    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+    password: '12345678', // password
     email: 'admin@bookstore.com',
     role: 'admin',
     createdAt: new Date().toISOString()

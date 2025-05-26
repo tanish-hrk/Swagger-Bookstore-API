@@ -1,7 +1,6 @@
 const User = require('../models/User');
 
 class UserController {
-  // Get all users
   static async getAllUsers(req, res) {
     try {
       const users = User.findAll();
@@ -15,7 +14,6 @@ class UserController {
     }
   }
 
-  // Get user by ID
   static async getUserById(req, res) {
     try {
       const { id } = req.params;
@@ -37,13 +35,11 @@ class UserController {
     }
   }
 
-  // Update user
   static async updateUser(req, res) {
     try {
       const { id } = req.params;
       const userData = req.body;
       
-      // Don't allow updating sensitive fields
       delete userData.password;
       delete userData.role;
 
@@ -66,7 +62,6 @@ class UserController {
     }
   }
 
-  // Delete user
   static async deleteUser(req, res) {
     try {
       const { id } = req.params;
@@ -88,7 +83,6 @@ class UserController {
     }
   }
 
-  // Update user preferences
   static async updatePreferences(req, res) {
     try {
       const { id } = req.params;
@@ -116,7 +110,6 @@ class UserController {
     }
   }
 
-  // Get user profile
   static async getProfile(req, res) {
     try {
       const userId = req.user.id;

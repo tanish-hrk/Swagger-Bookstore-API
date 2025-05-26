@@ -1,7 +1,6 @@
 const Book = require('../models/Book');
 
 class BookController {
-  // Create a new book
   static async createBook(req, res) {
     try {
       const bookData = req.body;
@@ -25,7 +24,6 @@ class BookController {
     }
   }
 
-  // Get all books
   static async getAllBooks(req, res) {
     try {
       const books = Book.findAll();
@@ -39,7 +37,6 @@ class BookController {
     }
   }
 
-  // Get book by ID
   static async getBookById(req, res) {
     try {
       const { id } = req.params;
@@ -61,7 +58,6 @@ class BookController {
     }
   }
 
-  // Update book
   static async updateBook(req, res) {
     try {
       const { id } = req.params;
@@ -86,7 +82,6 @@ class BookController {
     }
   }
 
-  // Delete book
   static async deleteBook(req, res) {
     try {
       const { id } = req.params;
@@ -108,7 +103,6 @@ class BookController {
     }
   }
 
-  // Search books
   static async searchBooks(req, res) {
     try {
       const { query } = req.query;
