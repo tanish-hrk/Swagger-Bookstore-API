@@ -2,7 +2,6 @@ const User = require('../models/User');
 const { generateToken, verifyToken } = require('../utils/jwt');
 
 class AuthController {
-  // Register new user
   static async register(req, res) {
     try {
       const { username, password, email, role } = req.body;
@@ -69,7 +68,6 @@ class AuthController {
     }
   }
 
-  // Validate token
   static async validateToken(req, res) {
     try {
       const decoded = verifyToken(req.token);
@@ -93,7 +91,6 @@ class AuthController {
     }
   }
 
-  // Logout (client-side token removal)
   static async logout(req, res) {
     res.json({
       message: 'Logout successful. Please remove the token from client side.'
