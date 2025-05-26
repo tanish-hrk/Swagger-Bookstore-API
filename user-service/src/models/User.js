@@ -14,69 +14,75 @@ let users = [
 ];
 
 class User {
-  constructor(userData) {
-    this.id = userData.id || uuidv4();
-    this.username = userData.username;
-    this.password = userData.password;
-    this.email = userData.email;
-    this.role = userData.role || 'user';
-    this.createdAt = userData.createdAt || new Date().toISOString();
+  constructor(id, username, email, role, preferences = {}) {
+    this.id = id;
+    this.username = username;
+    this.email = email;
+    this.role = role;
+    this.preferences = preferences;
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
   }
 
-  // Create new user
-  static async create(userData) {
-    // Check if user already exists
-    const existingUser = users.find(u => 
-      u.username === userData.username || u.email === userData.email
+  static create(userData) {
+    const id = users.length + 1;
+    const user = new User(
+      id,
+      userData.username,
+      userData.email,
+      userData.role || 'user',
+      userData.preferences || {}
     );
-    if (existingUser) {
-      throw new Error('User already exists');
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    
-    const user = new User({
-      ...userData,
-      password: hashedPassword
-    });
-
     users.push(user);
     return user;
   }
 
-  // Find user by username
-  static findByUsername(username) {
-    return users.find(u => u.username === username);
-  }
-
-  // Find user by email
-  static findByEmail(email) {
-    return users.find(u => u.email === email);
-  }
-
-  // Find user by ID
   static findById(id) {
-    return users.find(u => u.id === id);
+    return users.find(user => user.id === id);
   }
 
-  // Get all users (without passwords)
-  static getAll() {
-    return users.map(user => {
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword;
-    });
+  static findByUsername(username) {
+    return users.find(user => user.username === username);
   }
 
-  // Verify password
-  async verifyPassword(password) {
-    return await bcrypt.compare(password, this.password);
+  static findByEmail(email) {
+    return users.find(user => user.email === email);
   }
 
-  // Get user without password
+  static findAll() {
+    return users;
+  }
+
+  static update(id, userData) {
+    const index = users.findIndex(user => user.id === id);
+    if (index === -1) return null;
+
+    const updatedUser = {
+      ...users[index],
+      ...userData,
+      updatedAt: new Date()
+    };
+    users[index] = updatedUser;
+    return updatedUser;
+  }
+
+  static delete(id) {
+    const index = users.findIndex(user => user.id === id);
+    if (index === -1) return false;
+    users.splice(index, 1);
+    return true;
+  }
+
   toJSON() {
-    const { password, ...userWithoutPassword } = this;
-    return userWithoutPassword;
+    return {
+      id: this.id,
+      username: this.username,
+      email: this.email,
+      role: this.role,
+      preferences: this.preferences,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt
+    };
   }
 }
 
