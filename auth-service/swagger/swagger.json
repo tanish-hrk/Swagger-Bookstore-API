@@ -1,0 +1,319 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Bookstore Auth Service API",
+      "description": "Authentication microservice for the bookstore application",
+      "version": "1.0.0",
+      "contact": {
+        "name": "API Support",
+        "email": "support@bookstore.com"
+      }
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3001",
+        "description": "Development server"
+      }
+    ],
+    "tags": [
+      {
+        "name": "Authentication",
+        "description": "User authentication operations"
+      }
+    ],
+    "paths": {
+      "/api/auth/register": {
+        "post": {
+          "tags": ["Authentication"],
+          "summary": "Register a new user",
+          "description": "Create a new user account in the system",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterRequest"
+                },
+                "example": {
+                  "username": "johndoe",
+                  "password": "password123",
+                  "email": "john@example.com",
+                  "role": "user"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "User registered successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/AuthResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request - validation errors",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/auth/login": {
+        "post": {
+          "tags": ["Authentication"],
+          "summary": "Login user",
+          "description": "Authenticate user and return JWT token",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginRequest"
+                },
+                "example": {
+                  "username": "johndoe",
+                  "password": "password123"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Login successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/AuthResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid credentials",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/auth/validate": {
+        "get": {
+          "tags": ["Authentication"],
+          "summary": "Validate JWT token",
+          "description": "Check if the provided JWT token is valid",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Token is valid",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ValidateResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid or expired token",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/auth/logout": {
+        "post": {
+          "tags": ["Authentication"],
+          "summary": "Logout user",
+          "description": "Logout user (client should remove token)",
+          "responses": {
+            "200": {
+              "description": "Logout successful",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Logout successful. Please remove the token from client side."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/health": {
+        "get": {
+          "tags": ["Health"],
+          "summary": "Health check",
+          "description": "Check if the service is running",
+          "responses": {
+            "200": {
+              "description": "Service is running",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "example": "Auth Service is running"
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      },
+      "schemas": {
+        "RegisterRequest": {
+          "type": "object",
+          "required": ["username", "password", "email"],
+          "properties": {
+            "username": {
+              "type": "string",
+              "minLength": 3,
+              "description": "Unique username for the user"
+            },
+            "password": {
+              "type": "string",
+              "minLength": 6,
+              "description": "User password (minimum 6 characters)"
+            },
+            "email": {
+              "type": "string",
+              "format": "email",
+              "description": "User email address"
+            },
+            "role": {
+              "type": "string",
+              "enum": ["user", "admin"],
+              "default": "user",
+              "description": "User role in the system"
+            }
+          }
+        },
+        "LoginRequest": {
+          "type": "object",
+          "required": ["username", "password"],
+          "properties": {
+            "username": {
+              "type": "string",
+              "description": "Username for authentication"
+            },
+            "password": {
+              "type": "string",
+              "description": "Password for authentication"
+            }
+          }
+        },
+        "User": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Unique user identifier"
+            },
+            "username": {
+              "type": "string",
+              "description": "Username"
+            },
+            "email": {
+              "type": "string",
+              "format": "email",
+              "description": "User email address"
+            },
+            "role": {
+              "type": "string",
+              "enum": ["user", "admin"],
+              "description": "User role"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Account creation timestamp"
+            }
+          }
+        },
+        "AuthResponse": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "Success message"
+            },
+            "user": {
+              "$ref": "#/components/schemas/User"
+            },
+            "token": {
+              "type": "string",
+              "description": "JWT authentication token"
+            }
+          }
+        },
+        "ValidateResponse": {
+          "type": "object",
+          "properties": {
+            "valid": {
+              "type": "boolean",
+              "description": "Whether the token is valid"
+            },
+            "user": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        },
+        "ErrorResponse": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "Error message"
+            }
+          }
+        }
+      }
+    }
+  }
